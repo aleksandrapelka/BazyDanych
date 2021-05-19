@@ -124,22 +124,22 @@ BEGIN
 	IF @walutaZ = 'USD'
 	BEGIN
 		IF @walutaNa = 'PLN'
-			SET @wynik = ROUND(@przelicz * @kwota , 4); 
+			SET @wynik = ROUND(@przelicz * @kwota , 2); 
 		ELSE
 		BEGIN
 			SELECT @przelicz = AverageRate FROM AdventureWorks2019.Sales.CurrencyRate WHERE ToCurrencyCode = @walutaNa AND CurrencyRateDate = @data;
-			SET @wynik = ROUND(@przelicz * @kwota , 4); 
+			SET @wynik = ROUND(@przelicz * @kwota , 2); 
 		END;
 	END;
 	ELSE IF @walutaZ = 'PLN'
 		IF @walutaNa = 'PLN'
 			SET @wynik = @kwota;
 		ELSE
-			SET @wynik = ROUND(@kwota/@przelicz, 4);
+			SET @wynik = ROUND(@kwota/@przelicz, 2);
 	ELSE
 	BEGIN
 		SELECT @przelicz = AverageRate FROM AdventureWorks2019.Sales.CurrencyRate WHERE ToCurrencyCode = @walutaZ AND CurrencyRateDate = @data;
-		SET @wynik = ROUND(@kwota/@przelicz, 4);
+		SET @wynik = ROUND(@kwota/@przelicz, 2);
 	END;
 
 	DECLARE @tabela TABLE (Kwota FLOAT, WalutaZ VARCHAR(10), WalutaNa VARCHAR(10) ,Przelicznik FLOAT, KwotaKoncowa FLOAT)
