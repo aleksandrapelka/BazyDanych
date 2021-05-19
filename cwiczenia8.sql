@@ -10,7 +10,7 @@ BEGIN
 	WHERE Rate*2016 < (SELECT AVG(Rate)*2016 FROM HumanResources.EmployeePayHistory) ORDER BY Rate;
 END;
 
-SELECT * FROM  HumanResources.EmployeePayHistory;
+--SELECT * FROM  HumanResources.EmployeePayHistory;
 --#########################################################################################################################
 --ZADANIE 2:
 
@@ -124,25 +124,27 @@ BEGIN
 	IF @walutaZ = 'USD'
 	BEGIN
 		IF @walutaNa = 'PLN'
-			SET @wynik = @przelicz * @kwota;
+			SET @wynik = ROUND(@przelicz * @kwota , 4); 
 		ELSE
 		BEGIN
 			SELECT @przelicz = AverageRate FROM AdventureWorks2019.Sales.CurrencyRate WHERE ToCurrencyCode = @walutaNa AND CurrencyRateDate = @data;
-			SET @wynik = @przelicz * @kwota; 
+			SET @wynik = ROUND(@przelicz * @kwota , 4); 
 		END;
 	END;
 	ELSE IF @walutaZ = 'PLN'
 		IF @walutaNa = 'PLN'
 			SET @wynik = @kwota;
 		ELSE
-			SET @wynik = @kwota/@przelicz; 
+			SET @wynik = ROUND(@kwota/@przelicz, 4);
 	ELSE
 	BEGIN
 		SELECT @przelicz = AverageRate FROM AdventureWorks2019.Sales.CurrencyRate WHERE ToCurrencyCode = @walutaZ AND CurrencyRateDate = @data;
-		SET @wynik = @kwota/@przelicz;
+		SET @wynik = ROUND(@kwota/@przelicz, 4);
 	END;
 
-	SELECT @wynik AS Wynik;
+	DECLARE @tabela TABLE (Kwota FLOAT, WalutaZ VARCHAR(10), WalutaNa VARCHAR(10) ,Przelicznik FLOAT, KwotaKoncowa FLOAT)
+	INSERT INTO @tabela VALUES(@kwota, @walutaZ, @walutaNa, @przelicz, @wynik);
+	SELECT * FROM @tabela;
 END;
 
 DECLARE @waluta1 VARCHAR(10) = 'USD';
